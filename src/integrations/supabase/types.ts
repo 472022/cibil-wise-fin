@@ -14,7 +14,278 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cibil_predictions: {
+        Row: {
+          created_at: string | null
+          credit_utilization: number
+          existing_loans: number
+          factors: Json | null
+          id: string
+          income: number
+          payment_history: string
+          predicted_score: number
+          recent_inquiries: number
+          suggestions: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          credit_utilization: number
+          existing_loans: number
+          factors?: Json | null
+          id?: string
+          income: number
+          payment_history: string
+          predicted_score: number
+          recent_inquiries: number
+          suggestions?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          credit_utilization?: number
+          existing_loans?: number
+          factors?: Json | null
+          id?: string
+          income?: number
+          payment_history?: string
+          predicted_score?: number
+          recent_inquiries?: number
+          suggestions?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          associated_loan_id: string | null
+          category: string
+          created_at: string | null
+          file_size: number | null
+          file_type: string
+          file_url: string
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          associated_loan_id?: string | null
+          category: string
+          created_at?: string | null
+          file_size?: number | null
+          file_type: string
+          file_url: string
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          associated_loan_id?: string | null
+          category?: string
+          created_at?: string | null
+          file_size?: number | null
+          file_type?: string
+          file_url?: string
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_associated_loan_id_fkey"
+            columns: ["associated_loan_id"]
+            isOneToOne: false
+            referencedRelation: "loans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insurance_quotes: {
+        Row: {
+          age: number
+          annual_premium: number
+          coverage_amount: number
+          created_at: string | null
+          gender: string
+          id: string
+          insurance_type: string
+          monthly_premium: number
+          occupation: string
+          policy_term: number
+          risk_factors: Json | null
+          user_id: string
+        }
+        Insert: {
+          age: number
+          annual_premium: number
+          coverage_amount: number
+          created_at?: string | null
+          gender: string
+          id?: string
+          insurance_type: string
+          monthly_premium: number
+          occupation: string
+          policy_term: number
+          risk_factors?: Json | null
+          user_id: string
+        }
+        Update: {
+          age?: number
+          annual_premium?: number
+          coverage_amount?: number
+          created_at?: string | null
+          gender?: string
+          id?: string
+          insurance_type?: string
+          monthly_premium?: number
+          occupation?: string
+          policy_term?: number
+          risk_factors?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      loans: {
+        Row: {
+          amount: number
+          application_date: string
+          created_at: string | null
+          id: string
+          interest_rate: number | null
+          loan_type: string
+          monthly_emi: number | null
+          status: string
+          tenure_months: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          application_date?: string
+          created_at?: string | null
+          id?: string
+          interest_rate?: number | null
+          loan_type: string
+          monthly_emi?: number | null
+          status?: string
+          tenure_months?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          application_date?: string
+          created_at?: string | null
+          id?: string
+          interest_rate?: number | null
+          loan_type?: string
+          monthly_emi?: number | null
+          status?: string
+          tenure_months?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          current_cibil_score: number | null
+          email: string
+          full_name: string
+          id: string
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string | null
+          current_cibil_score?: number | null
+          email: string
+          full_name: string
+          id: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string | null
+          current_cibil_score?: number | null
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          category: string
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          description: string | null
+          due_date: string
+          id: string
+          priority: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_date: string
+          id?: string
+          priority?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string
+          id?: string
+          priority?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
