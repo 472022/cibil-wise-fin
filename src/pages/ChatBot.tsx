@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Send, Paperclip, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -13,26 +14,115 @@ interface Message {
   timestamp: Date;
 }
 
+// User context data for the AI assistant
+const USER_CONTEXT = {
+  name: "Prathamesh",
+  email: "prathamesh@gmail.com",
+  cibilScore: 750,
+  loans: [
+    { id: "L001", type: "Personal Loan", amount: 500000, status: "Active", applicationDate: "2024-01-15" },
+    { id: "L002", type: "Home Loan", amount: 2500000, status: "Approved", applicationDate: "2024-02-20" },
+    { id: "L003", type: "Car Loan", amount: 800000, status: "Pending", applicationDate: "2024-03-10" }
+  ],
+  reminders: [
+    { title: "Home Loan EMI Due", date: "2024-04-05", priority: "High" },
+    { title: "Update Income Proof", date: "2024-04-10", priority: "Medium" }
+  ],
+  documents: [
+    { name: "Aadhaar Card.pdf", type: "Identity", uploadDate: "2024-01-10" },
+    { name: "Salary Slip March.pdf", type: "Income Proof", uploadDate: "2024-03-01" }
+  ]
+};
+
+const GEMINI_API_KEY = "AIzaSyDfKnHD-akjnmcc2l1rzudEgjQrWwn3Mnc";
+
 const ChatBot = () => {
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      content: "Hello! I'm your AI Loan Assistant. How can I help you today?",
+      content: `Hello Prathamesh! I'm your AI Loan Assistant for AI CIBIL Store. I have access to your profile data and can help you with:\n\n• Your current CIBIL score (${USER_CONTEXT.cibilScore})\n• Your ${USER_CONTEXT.loans.length} loan applications\n• Document management\n• EMI calculations\n• Loan eligibility checks\n\nHow can I help you today?`,
       sender: "bot",
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const quickActions = [
-    "Check Eligibility",
+    "What's my CIBIL score?",
+    "Show my active loans",
     "Calculate EMI",
-    "Upload Documents",
-    "Loan Status",
+    "Check upcoming reminders",
   ];
 
-  const handleSend = () => {
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const callGeminiAPI = async (userMessage: string) => {
+    const systemPrompt = `You are an AI Loan Assistant for AI CIBIL Store platform. You help users with their loan applications, CIBIL scores, and financial queries.
+
+User Profile:
+- Name: ${USER_CONTEXT.name}
+- Email: ${USER_CONTEXT.email}
+- Current CIBIL Score: ${USER_CONTEXT.cibilScore}
+- Active Loans: ${JSON.stringify(USER_CONTEXT.loans)}
+- Upcoming Reminders: ${JSON.stringify(USER_CONTEXT.reminders)}
+- Documents: ${JSON.stringify(USER_CONTEXT.documents)}
+
+Guidelines:
+- Be helpful, professional, and concise
+- Use the user's data to provide personalized responses
+- If asked about CIBIL score, loans, reminders, or documents, use the actual data provided
+- Provide actionable advice for improving CIBIL scores
+- Help with loan eligibility and EMI calculations
+- Address the user by name (${USER_CONTEXT.name})`;
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `${systemPrompt}\n\nUser Question: ${userMessage}`,
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 1000,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to get response from Gemini");
+      }
+
+      const data = await response.json();
+      return data.candidates[0].content.parts[0].text;
+    } catch (error) {
+      console.error("Gemini API Error:", error);
+      throw error;
+    }
+  };
+
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const newMessage: Message = {
@@ -42,21 +132,39 @@ const ChatBot = () => {
       timestamp: new Date(),
     };
 
-    setMessages([...messages, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
     setInput("");
     setLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      const botResponse = await callGeminiAPI(input);
+      
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "I understand your query. Let me help you with that information. Based on your current profile, I can provide you with personalized loan recommendations.",
+        content: botResponse,
         sender: "bot",
         timestamp: new Date(),
       };
+      
       setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to get response. Please try again.",
+        variant: "destructive",
+      });
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
+        sender: "bot",
+        timestamp: new Date(),
+      };
+      
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   const handleQuickAction = (action: string) => {
@@ -98,7 +206,7 @@ const ChatBot = () => {
                         : "bg-muted"
                     }`}
                   >
-                    <p>{message.content}</p>
+                    <p className="whitespace-pre-wrap">{message.content}</p>
                     <p className="text-xs mt-2 opacity-70">
                       {message.timestamp.toLocaleTimeString()}
                     </p>
@@ -112,6 +220,7 @@ const ChatBot = () => {
                   </div>
                 </div>
               )}
+              <div ref={messagesEndRef} />
             </CardContent>
             <div className="border-t p-4">
               <div className="flex gap-2 mb-3">

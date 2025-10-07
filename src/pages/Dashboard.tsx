@@ -92,7 +92,7 @@ const Dashboard = () => {
         {/* Welcome Banner */}
         <div className="gradient-hero rounded-xl p-8 text-white">
           <div className="max-w-3xl">
-            <h1 className="text-4xl font-bold mb-2">Welcome Back, John!</h1>
+            <h1 className="text-4xl font-bold mb-2">Welcome Back, Prathamesh!</h1>
             <p className="text-lg text-white/90 mb-6">
               Your current CIBIL score is 750 - That's Excellent! 🎉
             </p>

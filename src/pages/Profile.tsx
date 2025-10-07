@@ -26,12 +26,12 @@ const Profile = () => {
             <div className="flex flex-col md:flex-row items-center gap-6">
               <Avatar className="w-24 h-24">
                 <AvatarFallback className="bg-primary text-primary-foreground text-3xl">
-                  JD
+                  P
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 text-center md:text-left">
-                <h2 className="text-2xl font-bold">John Doe</h2>
-                <p className="text-muted-foreground">john.doe@example.com</p>
+                <h2 className="text-2xl font-bold">Prathamesh</h2>
+                <p className="text-muted-foreground">prathamesh@gmail.com</p>
                 <Badge className="mt-2" variant="secondary">Premium User</Badge>
               </div>
               <Button variant="outline">
@@ -63,14 +63,14 @@ const Profile = () => {
                     <Label htmlFor="name">Full Name</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input id="name" defaultValue="John Doe" className="pl-10" />
+                      <Input id="name" defaultValue="Prathamesh" className="pl-10" />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input id="email" defaultValue="john.doe@example.com" className="pl-10" />
+                      <Input id="email" defaultValue="prathamesh@gmail.com" className="pl-10" />
                     </div>
                   </div>
                   <div className="space-y-2">

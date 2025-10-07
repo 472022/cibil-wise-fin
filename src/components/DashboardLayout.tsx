@@ -87,9 +87,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="gap-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
+                  <AvatarFallback className="bg-primary text-primary-foreground">P</AvatarFallback>
                 </Avatar>
-                <span className="hidden sm:inline-block">John Doe</span>
+                <span className="hidden sm:inline-block">Prathamesh</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
